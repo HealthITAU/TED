@@ -1,0 +1,74 @@
+# TED (Tag Every Desktop)
+
+TED is a commandline tool designed for displaying images and text programmatically on the desktop, positioned above the wallpaper but below the icons. It utilizes the bottom right corner of the primary monitor as the drawing area.
+
+## Features
+
+- Display images and text on the desktop
+- Ability to specify different images based on perceived desktop luminance.
+- Customize font, font size, line spacing, and padding
+- Substitute system values in the text with special tokens
+- DPi Aware
+
+## Requirements
+
+- Windows 8 or later
+
+## Limitations
+
+- Due to the nature of how this software draws, it will not work in a remote desktop environment due to rendering differences. You'll observe artifacts such as the image and/or text rendering then disappearing, smearing, or disappearing once moused over.
+- As above, when the user changes desktop scaling, wallpaper, or resolution, the image will disappear.
+
+One of the only ways I believe to get around these limitations would be to have TED run in the tray and redraw frequently and on Windows events (wallpaper changed, resized, etc.), but that's not something that's planned for the time being. PR's welcome!
+
+## Installation
+
+1. Download the latest compiled binary for TED from the [Releases](https://github.com/HealthITAU/TED/releases) page.
+
+2. Extract the downloaded archive to a location on your computer.
+
+3. Optionally, add the extracted directory to your system's PATH environment variable for easier command-line access to TED.
+
+## Usage
+
+The TED software supports the following switches:
+
+- `-i` or `-image`: Path or URL to the image to be drawn.
+- `-di` or `-darkimage`: Path or URL to the image to be drawn when the perceived desktop luminance is light.
+- `-li` or `-lightimage`: Path or URL to the image to be drawn when the perceived desktop luminance is dark.
+- `-f` or `-font`: Name of the font to use. Default is **Arial**.
+- `-fs` or `-fontsize`: Font size in pixels. Default is **8**.
+- `-ls` or `-linespacing`: Space between text lines in pixels. Default is **8**.
+- `-hp` or `-hpad`: Horizontal padding amount in pixels. Default is **10**.
+- `-vp` or `-vpad`: Vertical padding amount in pixels. Default is **10**.
+- `-line`: The text to be drawn. This switch can be repeated multiple times to draw multiple lines of text. It can contain special tokens: `@os`, `@userName`, and `@machineName`. These tokens get substituted at runtime with system values for the operating system, current user, and machine name. 
+  - If no lines are provided, it will render with the following by default:
+  - "USERNAME: @userName"
+  - "DEVICE NAME: @machineName"
+  - "OS: @os"
+
+Example usage:
+
+```shell
+ted -di path/to/dark_image.png -li path/to/light_image.png -f Arial -fs 14 -ls 5 -hp 10 -vp 10 -line "Hello, @userName!" -line "You are using @os on @machineName."
+```
+
+In terms of real world usage, we've found this to be a fantastic tool for helping clients quickly identify key information about their machine whilst on the phone with them.
+
+## Adding Tokens
+
+Adding Tokens to the text system is very easy, but will editing the source and compiling your own binary.
+Tokens are stored within TokenLookup inside Tokenizer.cs, linked below.
+https://github.com/HealthITAU/TED/blob/66025400ffe0e72500311bf4c20a67830fa87232/src/TED/TED.Utils/Tokenizer.cs#LL15C1-L20C11
+
+Simply add to this dictionary and use your new tokens!
+
+## Contributing
+
+Contributions to TED are welcome! If you find any issues or have suggestions for improvement, please feel free to open an issue or submit a pull request.
+
+## Contact
+
+For any inquiries or further information, please contact the project maintainer:
+- [@Yoshify](https://github.com/Yoshify)
+- [bailey@healthit.com.au](mailto:bailey@healthit.com.au?subject=[GitHub]%20TED%20Query)
