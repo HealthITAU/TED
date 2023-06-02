@@ -1,6 +1,6 @@
 # TED (Tag Every Desktop)
 
-TED is a commandline tool designed for displaying images and text programmatically on the desktop, positioned above the wallpaper but below the icons. It utilizes the bottom right corner of the primary monitor as the drawing area.
+TED is a commandline tool designed for MSPs to be able to display images and text programmatically on the desktop, positioned above the wallpaper but below the icons. It utilizes the bottom right corner of the primary monitor as the drawing area.
 
 ## Features
 
@@ -76,6 +76,5 @@ This project is licensed under the [GNU General Public License v3.0](https://git
 
 ## Contact
 
-For any inquiries or further information, please contact the project maintainer:
-- [@Yoshify](https://github.com/Yoshify)
-- [bailey@healthit.com.au](mailto:bailey@healthit.com.au?subject=[GitHub]%20TED%20Query)
+For any inquiries or further information, please contact the developers:
+- [dev@healthit.com.au](mailto:dev@healthit.com.au?subject=[GitHub]%20TED%20Query)
