@@ -58,6 +58,8 @@ Example usage:
 ted -di path/to/dark_image.png -li path/to/light_image.png -f Arial -fs 14 -ls 5 -hp 10 -vp 10 -line "Hello, @userName!" -line "You are using @os on @machineName."
 ```
 
+Images are resized (with maintaining their aspect ratio in mind) to fit the width of your longest line. 
+
 In terms of real world usage, we've found this to be a fantastic tool for helping clients quickly identify key information about their machine whilst on the phone with them.
 
 ## Adding Tokens
