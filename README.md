@@ -46,6 +46,9 @@ TED supports the following switches:
 - `-ls` or `-linespacing`: Space between text lines in pixels. Default is **8**.
 - `-hp` or `-hpad`: Horizontal padding amount in pixels. Default is **10**.
 - `-vp` or `-vpad`: Vertical padding amount in pixels. Default is **10**.
+- `-w` or `-width`: The width of the image when drawn, in pixels. By default this is **-1**. 
+  - A value of -1 disables fixed width scaling and instead uses automatic image scaling to resize (respecting aspect ratio) the image to the size of the longest line of text.
+- `-a` or `-align`: How the text should be aligned. Default is **Left**. Accepted values are **Left**, **Center** or **Right**. Not case-sensitive.
 - `-line`: The text to be drawn. This switch can be repeated multiple times to draw multiple lines of text. It can contain special tokens: `@os`, `@userName`, and `@machineName`. These tokens get substituted at runtime with system values for the operating system, current user, and machine name. 
   - If no lines are provided, it will render with the following by default:
   - "USERNAME: @userName"
@@ -57,8 +60,6 @@ Example usage:
 ```shell
 ted -di path/to/dark_image.png -li path/to/light_image.png -f Arial -fs 14 -ls 5 -hp 10 -vp 10 -line "Hello, @userName!" -line "You are using @os on @machineName."
 ```
-
-Images are resized (with maintaining their aspect ratio in mind) to fit the width of your longest line. 
 
 In terms of real world usage, we've found this to be a fantastic tool for helping clients quickly identify key information about their machine whilst on the phone with them.
 
