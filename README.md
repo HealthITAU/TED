@@ -1,4 +1,6 @@
-# TED (Tag Every Desktop)
+![Health IT Logo](https://healthit.com.au/wp-content/uploads/2019/06/HIT-proper-logo.png)
+
+# TED (Tag Every Desktop) - a Health IT Project
 
 TED is a commandline tool designed for MSPs to be able to display images and text programmatically on the desktop, positioned above the wallpaper but below the icons. It utilizes the bottom right corner of the primary monitor as the drawing area.
 
