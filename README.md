@@ -49,8 +49,7 @@ TED supports the following switches:
 - `-w` or `-width`: The width of the image when drawn, in pixels. By default this is **-1**. 
   - A value of -1 disables fixed width scaling and instead uses automatic image scaling to resize (respecting aspect ratio) the image to the size of the longest line of text.
 - `-a` or `-align`: How the text should be aligned. Default is **Left**. Accepted values are **Left**, **Center** or **Right**. Not case-sensitive.
-- `-line`: The text to be drawn. This switch can be repeated multiple times to draw multiple lines of text. It can contain special tokens: `@os`, `@userName`, and `@machineName`. These tokens get substituted at runtime with system values for the operating system, current user, and machine name. 
-  - If no lines are provided, it will render with the following by default:
+- `-line`: The text to be drawn. This switch can be repeated multiple times to draw multiple lines of text. It can contain special tokens: `@os`, `@userName`, and `@machineName`. These tokens get substituted at runtime with system values for the operating system, current user, and machine name. If no lines are provided, it will render with the following by default:
   - "USERNAME: @userName"
   - "DEVICE NAME: @machineName"
   - "OS: @os"
