@@ -4,8 +4,6 @@
 
 TED is a commandline tool, inspired by the classic [BGInfo](https://learn.microsoft.com/en-us/sysinternals/downloads/bginfo), designed for MSPs to be able to display images and text programmatically on the desktop, positioned above the wallpaper but below the icons. It utilizes the bottom right corner of the primary monitor as the drawing area.
 
-![TED Screenshot 1]( https://healthit.com.au/TEDScreenshot1_res1.png) ![TED Screenshot 2]( https://healthit.com.au/TEDScreenshot2_res1.png)
-
 ## Features
 
 - Display images and text on the desktop
@@ -63,6 +61,10 @@ ted -di path/to/dark_image.png -li path/to/light_image.png -f Arial -fs 14 -ls 5
 ```
 
 In terms of real world usage, we've found this to be a fantastic tool for helping clients quickly identify key information about their machine whilst on the phone with them.
+
+## Examples
+
+![TED Screenshot 1]( https://healthit.com.au/TEDScreenshot1_res1.png) ![TED Screenshot 2]( https://healthit.com.au/TEDScreenshot2_res1.png)
 
 ## Adding Tokens
 
