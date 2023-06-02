@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -36,6 +37,7 @@ namespace TED.Program
             var imagePath = GetArgument(args, new string[] { "-image", "-i" }, Options.Default.ImagePath);
             var darkImagePath = GetArgument(args, new string[] { "-darkimage", "-di" }, Options.Default.DarkImagePath);
             var lightImagePath = GetArgument(args, new string[] { "-lightimage", "-li" }, Options.Default.LightImagePath);
+            var alignment = GetArgument(args, new string[] { "-align", "-a" }, "left");
             var lines = Options.Default.Lines;
 
             if (!bool.TryParse(GetArgument(args, new string[] { "-debug", "-d" }, Options.Default.Debug.ToString()), out bool debug))
@@ -61,6 +63,28 @@ namespace TED.Program
             if (!int.TryParse(GetArgument(args, new string[] { "-vpad", "-vp" }, Options.Default.PaddingHorizontal.ToString()), out int paddingVertical))
             {
                 paddingVertical = Options.Default.PaddingVertical;
+            }
+
+            if (!int.TryParse(GetArgument(args, new string[] { "-width", "-w" }, Options.Default.FixedWidth.ToString()), out int fixedWidth))
+            {
+                fixedWidth = Options.Default.FixedWidth;
+            }
+
+            var alignmentOption = StringAlignment.Near;
+            switch(alignment.ToLower())
+            {
+                case "left":
+                    alignmentOption = StringAlignment.Near;
+                    break;
+                case "center":
+                    alignmentOption = StringAlignment.Center;
+                    break;
+                case "right":
+                    alignmentOption = StringAlignment.Far;
+                    break;
+                default:
+                    alignmentOption = StringAlignment.Near;
+                    break;
             }
 
             if (args.Any(arg => arg.Contains("-line")))
@@ -99,6 +123,8 @@ namespace TED.Program
                 lightImagePath,
                 darkImagePath,
                 lines,
+                fixedWidth,
+                alignmentOption,
                 debug
                 );
         }

@@ -50,8 +50,18 @@ namespace TED.DrawModes
                         var scaledWorkingAreaWidth = primaryAreaRect.X / scaleX;
                         var scaledWorkingAreaHeight = primaryAreaRect.Y / scaleY;
 
-                        // Calculate the maximum width of all lines
-                        var maxWidth = graphics.MeasureString(Options.Lines.Max(l => l), font).Width;
+                        var maxWidth = 0f;
+                        if(Options.FixedWidth > 0)
+                        {
+                            // Use the fixed width.
+                            maxWidth = Options.FixedWidth;
+                        }
+                        else
+                        {
+                            // Calculate the maximum width based on the longest line.
+                            maxWidth = Options.Lines.Select(line => new SizeF(graphics.MeasureString(line, font).Width, 0))
+                                            .Max(size => size.Width);
+                        }
 
                         // Calculate the positions of the text and the image
                         var textX = scaledWorkingAreaWidth + Screen.PrimaryScreen.WorkingArea.Width - maxWidth - Options.PaddingHorizontal;
@@ -80,8 +90,12 @@ namespace TED.DrawModes
                         {
                             var line = Options.Lines[i];
 
+                            var format = new StringFormat() { Alignment = Options.TextAlignment };
+                            var lineHeight = graphics.MeasureString(line, font).Height;
+                            var textRect = new RectangleF(textX, textY, maxWidth, lineHeight);
+
                             // Draw the line
-                            graphics.DrawString(line, font, new SolidBrush(textColor), new PointF(textX, textY));
+                            graphics.DrawString(line, font, new SolidBrush(textColor), textRect, format);
 
                             // Move the text cursor down to the next line
                             textY += graphics.MeasureString(line, font).Height;

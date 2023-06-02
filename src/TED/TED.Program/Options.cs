@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using TED.Utils;
 
 namespace TED.Program
@@ -17,6 +18,8 @@ namespace TED.Program
         internal readonly string LightImagePath;
         internal readonly string DarkImagePath;
         internal readonly List<string> Lines;
+        internal int FixedWidth;
+        internal StringAlignment TextAlignment;
         internal readonly bool Debug;
         internal readonly bool AdaptiveImageMode;
 
@@ -37,6 +40,8 @@ namespace TED.Program
                          Tokenizer.ReplaceTokens("DEVICE NAME: @machineName"),
                          Tokenizer.ReplaceTokens("OS: @os"),
                         },
+                        -1,
+                        StringAlignment.Near,
                         false);
 
                 return _default;
@@ -49,7 +54,7 @@ namespace TED.Program
         internal Options(int paddingHorizontal, int paddingVertical,
             int lineSpacing, int fontSize, string fontName,
             string imagePath, string lightImagePath,
-            string darkImagePath, List<string> lines,
+            string darkImagePath, List<string> lines, int fixedWidth, StringAlignment textAlignment,
             bool debug)
         {
             PaddingHorizontal = paddingHorizontal;
@@ -62,6 +67,8 @@ namespace TED.Program
             DarkImagePath = darkImagePath;
             Lines = lines;
             Debug = debug;
+            FixedWidth = fixedWidth;
+            TextAlignment = textAlignment;
             AdaptiveImageMode = !string.IsNullOrEmpty(LightImagePath) && !string.IsNullOrEmpty(DarkImagePath);
         }
 
