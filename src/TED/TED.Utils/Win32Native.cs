@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace TED.Utils
 {
@@ -117,8 +118,9 @@ namespace TED.Utils
             // The Thread.Sleep() is necessary because the command has a minor delay to it
             // Without it, the clear will end up running after we've generated a watermark,
             // removing our newly generated watermark
+            // Surely there's a better way to do this but for now... this works okay?
             SendMessage(windowHandle, 0x0034, 4, IntPtr.Zero);
-            //Thread.Sleep(2000);
+            Thread.Sleep(2000);
         }
 
         public static IntPtr CreateWorkerW(IntPtr progman)
