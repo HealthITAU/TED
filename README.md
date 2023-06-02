@@ -59,13 +59,19 @@ In terms of real world usage, we've found this to be a fantastic tool for helpin
 
 Adding Tokens to the text system is very easy, but will editing the source and compiling your own binary.
 Tokens are stored within TokenLookup inside Tokenizer.cs, linked below.
-https://github.com/HealthITAU/TED/blob/66025400ffe0e72500311bf4c20a67830fa87232/src/TED/TED.Utils/Tokenizer.cs#LL15C1-L20C11
 
-Simply add to this dictionary and use your new tokens!
+https://github.com/HealthITAU/TED/blob/678132907390cdbbe46e56f13e52fa6ab3b0c925/src/TED/TED.Utils/Tokenizer.cs#LL15C1-L20C11
+
+Simply add to this dictionary your token as the key and what you'd like to subtitute it with as the value.
+Compile, and use your new tokens!
 
 ## Contributing
 
 Contributions to TED are welcome! If you find any issues or have suggestions for improvement, please feel free to open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the [GNU General Public License v3.0](https://github.com/HealthITAU/TED/blob/main/LICENSE)
 
 ## Contact
 
