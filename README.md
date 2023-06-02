@@ -36,7 +36,7 @@ We recommend managing and deploying TED via your RMM.
 
 ## Usage
 
-The TED software supports the following switches:
+TED supports the following switches:
 
 - `-i` or `-image`: Path or URL to the image to be drawn.
 - `-di` or `-darkimage`: Path or URL to the image to be drawn when the perceived desktop luminance is light.
