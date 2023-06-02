@@ -7,7 +7,7 @@ TED is a commandline tool, inspired by the classic [BGInfo](https://learn.micros
 ## Features
 
 - Display images and text on the desktop
-- Ability to specify different images based on perceived desktop luminance.
+- Ability to specify different images based on perceived desktop luminance. Font color also adjusts between black or white based on perceived desktop luminance.
 - Substitute system values in the text with special tokens
 - DPi Aware
 - Customizable with a variety of commandline switches
