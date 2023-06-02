@@ -6,9 +6,9 @@ TED is a commandline tool designed for displaying images and text programmatical
 
 - Display images and text on the desktop
 - Ability to specify different images based on perceived desktop luminance.
-- Customize font, font size, line spacing, and padding
 - Substitute system values in the text with special tokens
 - DPi Aware
+- Customizable with a variety of commandline switches
 
 ## Requirements
 
