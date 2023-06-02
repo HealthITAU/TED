@@ -9,7 +9,7 @@ TED is a commandline tool designed for displaying images and text programmatical
 - Substitute system values in the text with special tokens
 - DPi Aware
 - Customizable with a variety of commandline switches
-- Designed for mass deployment with an RMM
+- Designed for deployment via an RMM
 
 ## Requirements
 
