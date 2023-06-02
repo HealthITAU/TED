@@ -30,6 +30,8 @@ One of the only ways I believe to get around these limitations would be to have 
 
 3. Optionally, add the extracted directory to your system's PATH environment variable for easier command-line access to TED.
 
+We recommend managing and deploying TED via your RMM. 
+
 ## Usage
 
 The TED software supports the following switches:
