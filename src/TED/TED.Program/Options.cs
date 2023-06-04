@@ -37,8 +37,8 @@ namespace TED.Program
                         new List<string>()
                         {
                          Tokenizer.ReplaceTokens("USERNAME: @userName"),
-                         Tokenizer.ReplaceTokens("DEVICE NAME: @machineName"),
-                         Tokenizer.ReplaceTokens("OS: @os"),
+                         Tokenizer.ReplaceTokens("MACHINE NAME: @machineName"),
+                         Tokenizer.ReplaceTokens("OS: @osName"),
                         },
                         -1,
                         StringAlignment.Near,
