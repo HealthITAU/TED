@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Principal;
+using Microsoft.VisualBasic.Devices;
 
 namespace TED.Utils
 {
@@ -16,7 +17,8 @@ namespace TED.Utils
         {
             { "@userName", () => WindowsIdentity.GetCurrent().Name },
             { "@machineName", () => Environment.MachineName },
-            { "@os", () => Environment.OSVersion.ToString() },
+            { "@osVersion", () => Environment.OSVersion.ToString() },
+            { "@osName", () => new ComputerInfo().OSFullName }
         };
 
         /// <summary>
