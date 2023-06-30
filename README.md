@@ -26,11 +26,10 @@ One of the only ways I believe to get around these limitations would be to have 
 
 ## Installation
 
-1. Download the latest compiled binary for TED from the [Releases](https://github.com/HealthITAU/TED/releases) page.
-
-2. Extract the downloaded archive to a location on your computer.
-
-3. Optionally, add the extracted directory to your system's PATH environment variable for easier command-line access to TED.
+Download the latest compiled binary for TED. You can find the latest downloads for TED below - this ensures your RMM always grabs the latest version!
+- [x64](https://github.com/HealthITAU/TED/releases/latest/download/TED-x64.exe)
+- [x86](https://github.com/HealthITAU/TED/releases/latest/download/TED-x86.exe)
+- [winarm64](https://github.com/HealthITAU/TED/releases/latest/download/TED-winarm64.exe)
 
 We recommend managing and deploying TED via your RMM. 
 
