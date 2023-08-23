@@ -26,11 +26,10 @@ One of the only ways I believe to get around these limitations would be to have 
 
 ## Installation
 
-1. Download the latest compiled binary for TED from the [Releases](https://github.com/HealthITAU/TED/releases) page.
-
-2. Extract the downloaded archive to a location on your computer.
-
-3. Optionally, add the extracted directory to your system's PATH environment variable for easier command-line access to TED.
+Download the latest compiled binary for TED. You can find the latest downloads for TED below - this ensures your RMM always grabs the latest version!
+- [x64](https://github.com/HealthITAU/TED/releases/latest/download/TED-x64.exe)
+- [x86](https://github.com/HealthITAU/TED/releases/latest/download/TED-x86.exe)
+- [winarm64](https://github.com/HealthITAU/TED/releases/latest/download/TED-winarm64.exe)
 
 We recommend managing and deploying TED via your RMM. 
 
@@ -49,15 +48,15 @@ TED supports the following switches:
 - `-w` or `-width`: The width of the image when drawn, in pixels. By default this is **-1**. 
   - A value of -1 disables fixed width scaling and instead uses automatic image scaling to resize (respecting aspect ratio) the image to the size of the longest line of text.
 - `-a` or `-align`: How the text should be aligned. Default is **Left**. Accepted values are **Left**, **Center** or **Right**. Not case-sensitive.
-- `-line`: The text to be drawn. This switch can be repeated multiple times to draw multiple lines of text. It can contain special tokens: `@os`, `@userName`, and `@machineName`. These tokens get substituted at runtime with system values for the operating system, current user, and machine name. If no lines are provided, it will render with the following by default:
+- `-line`: The text to be drawn. This switch can be repeated multiple times to draw multiple lines of text. It can contain special tokens: `@userName`, `@machineName`, `@osName` and `@osVersion`. These tokens get substituted at runtime with system values for the operating system, current user, and machine name. If no lines are provided, it will render with the following by default:
   - "USERNAME: @userName"
-  - "DEVICE NAME: @machineName"
-  - "OS: @os"
+  - "MACHINE NAME: @machineName"
+  - "OS: @osName"
 
 Example usage:
 
 ```shell
-ted -di path/to/dark_image.png -li path/to/light_image.png -f Arial -fs 14 -ls 5 -hp 10 -vp 10 -line "Hello, @userName!" -line "You are using @os on @machineName."
+ted -di path/to/dark_image.png -li path/to/light_image.png -f Arial -fs 14 -ls 5 -hp 10 -vp 10 -line "Hello, @userName!" -line "You are using @osName on @machineName."
 ```
 
 In terms of real world usage, we've found this to be a fantastic tool for helping clients quickly identify key information about their machine whilst on the phone with them.
@@ -69,9 +68,7 @@ In terms of real world usage, we've found this to be a fantastic tool for helpin
 ## Adding Tokens
 
 Adding Tokens to the text system is simple, but will require editing the source and compiling your own binary.
-Tokens are stored within TokenLookup inside Tokenizer.cs, linked below.
-
-https://github.com/HealthITAU/TED/blob/678132907390cdbbe46e56f13e52fa6ab3b0c925/src/TED/TED.Utils/Tokenizer.cs#LL15C1-L20C11
+Tokens are stored within TokenLookup inside Tokenizer.cs, found [here.](https://github.com/HealthITAU/TED/blob/main/src/TED/TED.Utils/Tokenizer.cs)
 
 Simply add to this dictionary your token as the key and what you'd like to subtitute it with as the value.
 Compile, and use your new tokens!
@@ -79,6 +76,15 @@ Compile, and use your new tokens!
 ## Contributing
 
 Contributions to TED are welcome! If you find any issues or have suggestions for improvement, please feel free to open an issue or submit a pull request.
+
+## Supporting the project
+:heart: the project and would like to show your support? Please consider donating to the following charities:
+- [Black Dog](https://donate.blackdoginstitute.org.au/)
+- [Cure4 CysticFibrosis Foundation](https://app.etapestry.com/onlineforms/Cure4CFFoundation/Donatenow.html)
+- [Vinnies CEO Sleepout](https://www.ceosleepout.org.au/donation)
+- [Care.org.au's Ukraine Humanitarian Crisis fund](https://www.care.org.au/appeals/ukraine-humanitarian-crisis/)
+- [RedFrogs Australia](https://redfrogs.com.au/support/donate)
+- [Love Your Sister (Sam's 1000)](https://www.loveyoursister.org/makeadonation)
 
 ## License
 
