@@ -1,5 +1,4 @@
-﻿#Your Logo goes here
-#This can either be a path to a local file, or a URL
+﻿#This can either be a path to a local file, or a URL
 $Pathtologo = 'valuegoeshere'
 
 #Setting some default paths
@@ -35,7 +34,7 @@ if(!(test-path -Path C:\ProgramData\TED)){
     #find Windows Architecture relevant download link
     $platform = try{Get-CimInstance -classname Win32_Processor| Select-Object -ExpandProperty Architecture}
     catch [System.Management.Automation.RuntimeException]{get-wmiobject Win32_Processor | Select-Object -ExpandProperty Architecture}
-    Switch($platform){
+    Switch($platform) {
         0 {
             $downloadURL = 'https://github.com/HealthITAU/TED/releases/latest/download/TED-x86.exe'
             WriteLog '32 bit Processor detected, downloading TED for x86 Architecture'
@@ -48,17 +47,17 @@ if(!(test-path -Path C:\ProgramData\TED)){
             $downloadURL = 'https://github.com/HealthITAU/TED/releases/latest/download/TED-winarm64.exe'
             WriteLog 'ARM Processor detected, downloading TED for ARM Architecture'
         }
-        default{
-            $NoPlatform = $true}
-        }
-        if(!$NoPlatform) {
-            wget -OutFile $TEDPath $downloadURL
-        }
-        else{
-            Write-Output "Cannot determine Windows Arcitecture, defaulting to 64bit"
-            WriteLog "Cannot determine Windows Arcitecture, defaulting to 64bit"
-            wget -OutFile $TEDPath $downloadURL
-        }
+        default{ $NoPlatform = $true }
+    }
+        
+    if(!$NoPlatform) {
+        wget -OutFile $TEDPath $downloadURL
+    }
+    else {
+        Write-Output "Cannot determine Windows Arcitecture, defaulting to 64bit"
+        WriteLog "Cannot determine Windows Arcitecture, defaulting to 64bit"
+        wget -OutFile $TEDPath $downloadURL
+    }
 }
 
 WriteLog "Creating Shortcut with switches to image provided"
