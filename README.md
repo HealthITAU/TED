@@ -53,15 +53,17 @@ TED supports the following switches:
   - "MACHINE NAME: @machineName"
   - "OS: @osName"
 
-Example usage:
+## Examples
+
+We've provided an example PowerShell script to make deploying with your RMM quick and easy. You can find the script [here.](https://github.com/HealthITAU/TED/blob/main/examples/rmm_deploy.ps1)
+
+TED is a CLI tool and can be called like so:
 
 ```shell
 ted -di path/to/dark_image.png -li path/to/light_image.png -f Arial -fs 14 -ls 5 -hp 10 -vp 10 -line "Hello, @userName!" -line "You are using @osName on @machineName."
 ```
 
 In terms of real world usage, we've found this to be a fantastic tool for helping clients quickly identify key information about their machine whilst on the phone with them.
-
-## Examples
 
 ![TED Screenshot 1]( https://healthit.com.au/TEDScreenshot1_res1.png) ![TED Screenshot 2]( https://healthit.com.au/TEDScreenshot2_res1.png)
 
