@@ -57,6 +57,7 @@ namespace TED.Utils
             catch (Exception)
             {
                 // Handle any error gracefully or just return an empty string
+                return string.Empty;
             }
         
             return string.Empty;        
