@@ -19,7 +19,7 @@ namespace TED.Utils
             { "@userName", () => WindowsIdentity.GetCurrent().Name },
             { "@machineName", () => Environment.MachineName },
             { "@osVersion", () => Environment.OSVersion.ToString() },
-            { "@osName", () => new ComputerInfo().OSFullName }
+            { "@osName", () => new ComputerInfo().OSFullName },
             { "@dellServiceTag", () => GetSerial() }
 
         };
