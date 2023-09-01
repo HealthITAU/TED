@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Principal;
 using Microsoft.VisualBasic.Devices;
+using System.Management;
 
 namespace TED.Utils
 {
@@ -19,6 +20,8 @@ namespace TED.Utils
             { "@machineName", () => Environment.MachineName },
             { "@osVersion", () => Environment.OSVersion.ToString() },
             { "@osName", () => new ComputerInfo().OSFullName }
+            { "@dellServiceTag", () => GetSerial() }
+
         };
 
         /// <summary>
@@ -38,6 +41,27 @@ namespace TED.Utils
 
             return input;
         }
+        private static string GetSerial()
+        {
+            try
+            {
+                var query = new System.Management.ObjectQuery("SELECT * FROM Win32_BIOS");
+                var searcher = new System.Management.ManagementObjectSearcher(query);
+                var results = searcher.Get();
+        
+                foreach (var obj in results)
+                {
+                    return obj["SerialNumber"].ToString();
+                }
+            }
+            catch (Exception)
+            {
+                // Handle any error gracefully or just return an empty string
+            }
+        
+            return string.Empty;        
+        }
+                
     }
 
 }
