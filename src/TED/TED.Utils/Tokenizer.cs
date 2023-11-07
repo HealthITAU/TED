@@ -20,7 +20,7 @@ namespace TED.Utils
             { "@machineName", () => Environment.MachineName },
             { "@osVersion", () => Environment.OSVersion.ToString() },
             { "@osName", () => new ComputerInfo().OSFullName },
-            { "@dellServiceTag", () => GetSerial() }
+            { "@machineSerial", () => GetSerial() }
 
         };
 
@@ -45,8 +45,8 @@ namespace TED.Utils
         {
             try
             {
-                var query = new System.Management.ObjectQuery("SELECT * FROM Win32_BIOS");
-                var searcher = new System.Management.ManagementObjectSearcher(query);
+                var query = new ObjectQuery("SELECT * FROM Win32_BIOS");
+                var searcher = new ManagementObjectSearcher(query);
                 var results = searcher.Get();
         
                 foreach (var obj in results)
