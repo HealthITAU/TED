@@ -41,8 +41,10 @@ namespace TED.Utils
 
             return input;
         }
-        private static string GetSerial()
+        
+        private static List<string> GetSerialNumbers()
         {
+            List<string> serialNumbers = new List<string>();
             try
             {
                 var query = new ObjectQuery("SELECT * FROM Win32_BIOS");
@@ -51,16 +53,16 @@ namespace TED.Utils
         
                 foreach (var obj in results)
                 {
-                    return obj["SerialNumber"].ToString();
+                    serialNumbers.Add(obj["SerialNumber"].ToString());
                 }
             }
             catch (Exception)
             {
-                // Handle any error gracefully or just return an empty string
-                return string.Empty;
+                // Handle any error gracefully or just return an empty list
+                return new List<string>();
             }
         
-            return string.Empty;        
+            return serialNumbers;        
         }
                 
     }
