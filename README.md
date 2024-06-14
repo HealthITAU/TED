@@ -85,6 +85,7 @@ Contributions to TED are welcome! If you find any issues or have suggestions for
 - [Love Your Sister (Sam's 1000)](https://www.loveyoursister.org/makeadonation)
 - [Black Dog](https://donate.blackdoginstitute.org.au/)
 - [RedFrogs Australia](https://redfrogs.com.au/support/donate)
+
 Please let us know if you have donated because of this project!
 
 ## License
