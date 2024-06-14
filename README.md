@@ -80,13 +80,12 @@ Compile, and use your new tokens!
 Contributions to TED are welcome! If you find any issues or have suggestions for improvement, please feel free to open an issue or submit a pull request.
 
 ## Supporting the project
-:heart: the project and would like to show your support? Please consider donating to the following charities:
-- [Black Dog](https://donate.blackdoginstitute.org.au/)
-- [Cure4 CysticFibrosis Foundation](https://app.etapestry.com/onlineforms/Cure4CFFoundation/Donatenow.html)
-- [Vinnies CEO Sleepout](https://www.ceosleepout.org.au/donation)
-- [Care.org.au's Ukraine Humanitarian Crisis fund](https://www.care.org.au/appeals/ukraine-humanitarian-crisis/)
-- [RedFrogs Australia](https://redfrogs.com.au/support/donate)
+
+:heart: the project and would like to show your support? Please consider donating to one of our favourite charities:
 - [Love Your Sister (Sam's 1000)](https://www.loveyoursister.org/makeadonation)
+- [Black Dog](https://donate.blackdoginstitute.org.au/)
+- [RedFrogs Australia](https://redfrogs.com.au/support/donate)
+Please let us know if you have donated because of this project!
 
 ## License
 
