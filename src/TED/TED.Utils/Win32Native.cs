@@ -12,6 +12,8 @@ namespace TED.Utils
     {
         private const int GWL_STYLE = -16;
         private const uint SWP_FRAMECHANGED = 0x0020;
+        private const uint SWP_NOMOVE = 0x0002;
+        private const uint SWP_NOSIZE = 0x0001;
         private const uint SWP_NOACTIVATE = 0x0010;
         private const uint SWP_SHOWWINDOW = 0x0040;
         private const uint WM_SPAWN_WORKERW = 0x052C;
@@ -62,6 +64,9 @@ namespace TED.Utils
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr SetParent(IntPtr childHandle, IntPtr newParentHandle);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetParent(IntPtr windowHandle);
+
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", SetLastError = true)]
         public static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
 
@@ -109,16 +114,31 @@ namespace TED.Utils
             return progmanChildWorker != IntPtr.Zero ? progmanChildWorker : FindTopLevelWorkerWBehindDesktopIcons();
         }
 
-        public static void AttachWindowToDesktopHost(IntPtr windowHandle, IntPtr desktopHost, Size size)
+        public static void AttachWindowToDesktopHost(IntPtr windowHandle, IntPtr desktopHost, Size size, bool updateSize)
         {
-            SetParent(windowHandle, desktopHost);
+            if (GetParent(windowHandle) != desktopHost)
+            {
+                SetParent(windowHandle, desktopHost);
+            }
 
             var style = GetWindowLongPtr(windowHandle, GWL_STYLE).ToInt64();
-            style &= ~WS_POPUP;
-            style |= WS_CHILD | WS_VISIBLE;
-            SetWindowLongPtr(windowHandle, GWL_STYLE, new IntPtr(style));
+            var desiredStyle = (style & ~WS_POPUP) | WS_CHILD | WS_VISIBLE;
+            if (style != desiredStyle)
+            {
+                SetWindowLongPtr(windowHandle, GWL_STYLE, new IntPtr(desiredStyle));
+            }
 
-            SetWindowPos(windowHandle, HWND_TOP, 0, 0, size.Width, size.Height, SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_FRAMECHANGED);
+            var flags = SWP_NOACTIVATE | SWP_SHOWWINDOW;
+            if (!updateSize)
+            {
+                flags |= SWP_NOMOVE | SWP_NOSIZE;
+            }
+            else
+            {
+                flags |= SWP_FRAMECHANGED;
+            }
+
+            SetWindowPos(windowHandle, HWND_TOP, 0, 0, size.Width, size.Height, flags);
         }
 
         public static void CloseWindow(IntPtr windowHandle)

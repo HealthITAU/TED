@@ -20,6 +20,7 @@ namespace TED.DrawModes
         private readonly Timer repairTimer;
         private IntPtr desktopHost;
         private int remainingRepairAttempts;
+        private Size lastVirtualScreenSize;
 
         internal DesktopOverlayForm(IntPtr desktopHost, Options options)
         {
@@ -36,7 +37,7 @@ namespace TED.DrawModes
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
 
             refreshTimer = new Timer { Interval = 30000 };
-            refreshTimer.Tick += (_, _) => RepairDesktopAttachment();
+            refreshTimer.Tick += (_, _) => Invalidate();
 
             repairTimer = new Timer { Interval = 500 };
             repairTimer.Tick += (_, _) => ContinueDesktopRepair();
@@ -60,7 +61,8 @@ namespace TED.DrawModes
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
-            Win32Native.AttachWindowToDesktopHost(Handle, desktopHost, SystemInformation.VirtualScreen.Size);
+            lastVirtualScreenSize = SystemInformation.VirtualScreen.Size;
+            Win32Native.AttachWindowToDesktopHost(Handle, desktopHost, lastVirtualScreenSize, true);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -90,12 +92,12 @@ namespace TED.DrawModes
 
         protected override void OnPaintBackground(PaintEventArgs e)
         {
-            e.Graphics.Clear(TransparencyColor);
+            // Suppress the default background erase; OnPaint clears and draws in one buffered pass.
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            base.OnPaint(e);
+            e.Graphics.Clear(TransparencyColor);
             DesktopTagRenderer.Draw(e.Graphics, options);
         }
 
@@ -144,7 +146,11 @@ namespace TED.DrawModes
                 desktopHost = currentHost;
             }
 
-            Win32Native.AttachWindowToDesktopHost(Handle, desktopHost, SystemInformation.VirtualScreen.Size);
+            var currentVirtualScreenSize = SystemInformation.VirtualScreen.Size;
+            var sizeChanged = currentVirtualScreenSize != lastVirtualScreenSize;
+            lastVirtualScreenSize = currentVirtualScreenSize;
+
+            Win32Native.AttachWindowToDesktopHost(Handle, desktopHost, currentVirtualScreenSize, sizeChanged);
             Invalidate();
         }
     }
