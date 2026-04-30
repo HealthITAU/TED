@@ -10,6 +10,7 @@ TED is a commandline tool, inspired by the classic [BGInfo](https://learn.micros
 - Ability to specify different images based on perceived desktop luminance. Font color also adjusts between black or white based on perceived desktop luminance.
 - Substitute system values in the text with special tokens
 - DPi Aware
+- Persistent desktop overlay that redraws itself without replacing the user's wallpaper
 - Customizable with a variety of commandline switches
 - Designed for deployment via an RMM
 
@@ -19,10 +20,8 @@ TED is a commandline tool, inspired by the classic [BGInfo](https://learn.micros
 
 ## Limitations
 
-- Due to the nature of how this software draws, it will not work in a remote desktop environment due to rendering differences. You'll observe artifacts such as the image and/or text rendering then disappearing, smearing, or disappearing once moused over.
-- As above, when the user changes desktop scaling, wallpaper, or resolution, the image will disappear.
-
-One of the only ways I believe to get around these limitations would be to have TED run in the tray and redraw frequently and on Windows events (wallpaper changed, resized, etc.), but that's not something that's planned for the time being. PR's welcome!
+- TED runs as a lightweight desktop process so it can repaint itself when Windows redraws the desktop. This avoids modifying or replacing the user's wallpaper.
+- In remote desktop environments, Explorer and GPU composition behavior can still vary between Windows versions and client settings.
 
 ## Installation
 
