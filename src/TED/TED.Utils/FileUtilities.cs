@@ -37,7 +37,7 @@ namespace TED.Utils
                     {
                         response.EnsureSuccessStatusCode();
                     }
-                    catch (HttpRequestException e)
+                    catch (HttpRequestException)
                     {
                         // If we catch here, it's a URL error or server-side issue.
                         if (File.Exists(recentPath))
@@ -93,7 +93,7 @@ namespace TED.Utils
                         }
                     }
                 }
-            } catch(HttpRequestException e)
+            } catch(HttpRequestException)
             {
                 // If we catch here, we're offline.
                 if (File.Exists(recentPath))

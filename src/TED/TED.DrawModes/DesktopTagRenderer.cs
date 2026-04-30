@@ -1,7 +1,6 @@
 using System;
 using System.Drawing;
 using System.Linq;
-using System.Windows.Forms;
 using TED.Program;
 using TED.Utils;
 
@@ -16,6 +15,7 @@ namespace TED.DrawModes
         {
             var wallpaperLuminance = ImageUtilities.CalculateWallpaperLuminance();
             var primaryAreaRect = SystemUtilities.GetPrimaryScreenRect();
+            var primaryWorkingArea = SystemUtilities.GetPrimaryScreenWorkingArea();
             var imagePath = options.GetImagePath(wallpaperLuminance);
             var textColor = wallpaperLuminance > 0.5 ? Color.Black : Color.White;
 
@@ -38,8 +38,8 @@ namespace TED.DrawModes
                 }
 
                 var lineHeights = options.Lines.Select(line => graphics.MeasureString(line, font).Height).ToList();
-                var textX = scaledWorkingAreaWidth + Screen.PrimaryScreen.WorkingArea.Width - maxWidth - options.PaddingHorizontal;
-                var textY = scaledWorkingAreaHeight + Screen.PrimaryScreen.WorkingArea.Height - lineHeights.Sum() - (options.LineSpacing * (options.Lines.Count - 1)) - options.PaddingVertical;
+                var textX = scaledWorkingAreaWidth + primaryWorkingArea.Width - maxWidth - options.PaddingHorizontal;
+                var textY = scaledWorkingAreaHeight + primaryWorkingArea.Height - lineHeights.Sum() - (options.LineSpacing * (options.Lines.Count - 1)) - options.PaddingVertical;
 
                 if (!string.IsNullOrEmpty(imagePath))
                 {
@@ -47,8 +47,8 @@ namespace TED.DrawModes
                     {
                         ImageUtilities.ScaleImageAndMaintainAspectRatio(overlayImage.Width, overlayImage.Height, maxWidth, int.MaxValue, out int newWidth, out int newHeight);
 
-                        var imageX = scaledWorkingAreaWidth + Screen.PrimaryScreen.WorkingArea.Width - newWidth - options.PaddingHorizontal;
-                        var imageY = scaledWorkingAreaHeight + Screen.PrimaryScreen.WorkingArea.Height - newHeight - lineHeights.Sum() - (options.LineSpacing * options.Lines.Count) - options.PaddingVertical;
+                        var imageX = scaledWorkingAreaWidth + primaryWorkingArea.Width - newWidth - options.PaddingHorizontal;
+                        var imageY = scaledWorkingAreaHeight + primaryWorkingArea.Height - newHeight - lineHeights.Sum() - (options.LineSpacing * options.Lines.Count) - options.PaddingVertical;
 
                         textX = imageX;
                         textY = imageY + newHeight + options.LineSpacing;
