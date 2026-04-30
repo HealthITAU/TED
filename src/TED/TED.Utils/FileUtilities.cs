@@ -112,7 +112,7 @@ namespace TED.Utils
         /// </summary>
         /// <param name="url">The URL of the file to download.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is the path to the downloaded (or cached) file.</returns>
-        public static bool PathIsLocalFile(string path) => Path.IsPathFullyQualified(path) && File.Exists(path);
+        public static bool PathIsLocalFile(string path) => File.Exists(path);
 
         /// <summary>
         /// Determines whether a specified path represents a URL.
