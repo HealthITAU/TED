@@ -67,11 +67,17 @@ namespace TED.Utils
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr GetParent(IntPtr windowHandle);
 
+        [DllImport("user32.dll", EntryPoint = "GetWindowLong", SetLastError = true)]
+        private static extern int GetWindowLong32(IntPtr hWnd, int nIndex);
+
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", SetLastError = true)]
-        public static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
+        private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong", SetLastError = true)]
+        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", SetLastError = true)]
-        public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -149,6 +155,20 @@ namespace TED.Utils
         public static IntPtr FindChildWindowByTitle(IntPtr parentHandle, string windowTitle)
         {
             return FindWindowExByTitle(parentHandle, IntPtr.Zero, null, windowTitle);
+        }
+
+        private static IntPtr GetWindowLongPtr(IntPtr windowHandle, int index)
+        {
+            return IntPtr.Size == 8
+                ? GetWindowLongPtr64(windowHandle, index)
+                : new IntPtr(GetWindowLong32(windowHandle, index));
+        }
+
+        private static IntPtr SetWindowLongPtr(IntPtr windowHandle, int index, IntPtr newLong)
+        {
+            return IntPtr.Size == 8
+                ? SetWindowLongPtr64(windowHandle, index, newLong)
+                : new IntPtr(SetWindowLong32(windowHandle, index, newLong.ToInt32()));
         }
 
         private static IntPtr FindTopLevelWorkerWBehindDesktopIcons()
