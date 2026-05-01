@@ -19,8 +19,9 @@ namespace TED.DrawModes
             var imagePath = options.GetImagePath(wallpaperLuminance);
             var textColor = wallpaperLuminance > 0.5 ? Color.Black : Color.White;
 
-            using (var font = new Font(options.FontName, options.FontSize, FontStyle.Bold))
+            using (var font = new Font(options.FontName, options.FontSize, FontStyle.Regular))
             {
+                var formattedLines = options.Lines.Select(MarkdownInlineParser.Parse).ToList();
                 var scaleX = graphics.DpiX / 96.0f;
                 var scaleY = graphics.DpiY / 96.0f;
                 var scaledWorkingAreaWidth = primaryAreaRect.X / scaleX;
@@ -33,11 +34,12 @@ namespace TED.DrawModes
                 }
                 else
                 {
-                    maxWidth = options.Lines.Select(line => new SizeF(graphics.MeasureString(line, font).Width, 0))
-                                            .Max(size => size.Width);
+                    maxWidth = formattedLines.Select(line => MeasureFormattedLine(graphics, line, font).Width)
+                                             .DefaultIfEmpty(0)
+                                             .Max();
                 }
 
-                var lineHeights = options.Lines.Select(line => graphics.MeasureString(line, font).Height).ToList();
+                var lineHeights = formattedLines.Select(line => MeasureFormattedLine(graphics, line, font).Height).ToList();
                 var textX = scaledWorkingAreaWidth + primaryWorkingArea.Width - maxWidth - options.PaddingHorizontal;
                 var textY = scaledWorkingAreaHeight + primaryWorkingArea.Height - lineHeights.Sum() - (options.LineSpacing * (options.Lines.Count - 1)) - options.PaddingVertical;
 
@@ -59,13 +61,9 @@ namespace TED.DrawModes
 
                 for (var i = 0; i < options.Lines.Count; i++)
                 {
-                    var line = options.Lines[i];
-
                     using (var brush = new SolidBrush(textColor))
-                    using (var format = new StringFormat() { Alignment = options.TextAlignment })
                     {
-                        var textRect = new RectangleF(textX, textY, maxWidth, lineHeights[i]);
-                        graphics.DrawString(line, font, brush, textRect, format);
+                        DrawFormattedLine(graphics, formattedLines[i], font, brush, textX, textY, maxWidth, options.TextAlignment);
                     }
 
                     textY += lineHeights[i];
@@ -76,6 +74,77 @@ namespace TED.DrawModes
                     }
                 }
             }
+        }
+
+        private static SizeF MeasureFormattedLine(Graphics graphics, FormattedLine line, Font baseFont)
+        {
+            var width = 0f;
+            var height = graphics.MeasureString(string.Empty, baseFont, int.MaxValue, StringFormat.GenericTypographic).Height;
+
+            foreach (var run in line.Runs)
+            {
+                using (var runFont = CreateRunFont(baseFont, run))
+                using (var format = CreateStringFormat())
+                {
+                    var size = graphics.MeasureString(run.Text, runFont, int.MaxValue, format);
+                    width += size.Width;
+                    height = Math.Max(height, size.Height);
+                }
+            }
+
+            return new SizeF(width, height);
+        }
+
+        private static void DrawFormattedLine(Graphics graphics, FormattedLine line, Font baseFont, Brush brush, float x, float y, float maxWidth, StringAlignment alignment)
+        {
+            var lineSize = MeasureFormattedLine(graphics, line, baseFont);
+            var runX = x + GetAlignedOffset(maxWidth, lineSize.Width, alignment);
+
+            foreach (var run in line.Runs)
+            {
+                using (var runFont = CreateRunFont(baseFont, run))
+                using (var format = CreateStringFormat())
+                {
+                    graphics.DrawString(run.Text, runFont, brush, new PointF(runX, y), format);
+                    runX += graphics.MeasureString(run.Text, runFont, int.MaxValue, format).Width;
+                }
+            }
+        }
+
+        private static Font CreateRunFont(Font baseFont, TextRun run)
+        {
+            var style = baseFont.Style;
+            if (run.Bold)
+            {
+                style |= FontStyle.Bold;
+            }
+
+            if (run.Italic)
+            {
+                style |= FontStyle.Italic;
+            }
+
+            return new Font(baseFont.FontFamily, baseFont.Size, style, baseFont.Unit);
+        }
+
+        private static float GetAlignedOffset(float maxWidth, float lineWidth, StringAlignment alignment)
+        {
+            switch (alignment)
+            {
+                case StringAlignment.Center:
+                    return (maxWidth - lineWidth) / 2;
+                case StringAlignment.Far:
+                    return maxWidth - lineWidth;
+                default:
+                    return 0;
+            }
+        }
+
+        private static StringFormat CreateStringFormat()
+        {
+            var format = (StringFormat)StringFormat.GenericTypographic.Clone();
+            format.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
+            return format;
         }
     }
 }
