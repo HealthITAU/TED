@@ -2,16 +2,16 @@
 
 # TED (Tag Every Desktop) - a Health IT Project
 
-TED is a commandline tool, inspired by the classic [BGInfo](https://learn.microsoft.com/en-us/sysinternals/downloads/bginfo), designed for MSPs to be able to display images and text programmatically on the desktop, positioned above the wallpaper but below the icons. It utilizes the bottom right corner of the primary monitor as the drawing area.
+TED is a command-line tool, inspired by the classic [BGInfo](https://learn.microsoft.com/en-us/sysinternals/downloads/bginfo), designed for MSPs to be able to display images and text programmatically on the desktop, positioned above the wallpaper but below the icons. It utilizes the bottom right corner of the primary monitor as the drawing area.
 
 ## Features
 
 - Display images and text on the desktop
 - Ability to specify different images based on perceived desktop luminance. Font color also adjusts between black or white based on perceived desktop luminance.
 - Substitute system values in the text with special tokens
-- DPi Aware
+- DPI aware
 - Persistent desktop overlay that redraws itself without replacing the user's wallpaper
-- Customizable with a variety of commandline switches
+- Customizable with a variety of command-line switches
 - Designed for deployment via an RMM
 
 ## Requirements
@@ -47,10 +47,40 @@ TED supports the following switches:
 - `-w` or `-width`: The width of the image when drawn, in pixels. By default this is **-1**. 
   - A value of -1 disables fixed width scaling and instead uses automatic image scaling to resize (respecting aspect ratio) the image to the size of the longest line of text.
 - `-a` or `-align`: How the text should be aligned. Default is **Left**. Accepted values are **Left**, **Center** or **Right**. Not case-sensitive.
-- `-line`: The text to be drawn. This switch can be repeated multiple times to draw multiple lines of text. It can contain special tokens: `@userName`, `@machineName`, `@osName` and `@osVersion`. These tokens get substituted at runtime with system values for the operating system, current user, and machine name. Lines also support inline rich text tags for bold (`<b>text</b>`), italic (`<i>text</i>`), underline (`<u>text</u>`), and color (`<color=green>text</color>` or `<color=#800080>text</color>`). Untagged text still uses TED's luminance-based black or white text color; tagged colors are drawn as specified. If no lines are provided, it will render with the following by default:
+- `-line`: The text to be drawn. This switch can be repeated multiple times to draw multiple lines of text. Lines can contain system tokens and inline rich text formatting, both documented below. If no lines are provided, TED renders the following by default:
   - "USERNAME: @userName"
   - "MACHINE NAME: @machineName"
   - "OS: @osName"
+
+### Line tokens
+
+Tokens can be used inside any `-line` value. TED substitutes them at runtime with values from the current Windows session, machine identity, operating system, and primary network connection.
+
+| Token | Runtime value |
+| --- | --- |
+| `@userName` | Current Windows user name |
+| `@machineName` | Computer name |
+| `@machineSerial` | Device serial number |
+| `@manufacturer` | Device manufacturer |
+| `@model` | Device model |
+| `@ipAddress` | Primary IP address |
+| `@macAddress` | Primary MAC address |
+| `@osName` | Operating system name |
+| `@osVersion` | Operating system version |
+
+### Inline formatting
+
+Lines also support a small set of inline rich text tags:
+
+| Tag | Example |
+| --- | --- |
+| Bold | `<b>text</b>` |
+| Italic | `<i>text</i>` |
+| Underline | `<u>text</u>` |
+| Named color | `<color=green>text</color>` |
+| Hex color | `<color=#800080>text</color>` |
+
+Untagged text uses TED's luminance-based black or white text color. Tagged colors are drawn as specified.
 
 ## Examples
 
@@ -72,13 +102,12 @@ In terms of real world usage, we've found this to be a fantastic tool for helpin
 
 ![TED Screenshot 1]( https://healthit.com.au/TEDScreenshot1_res1.png) ![TED Screenshot 2]( https://healthit.com.au/TEDScreenshot2_res1.png)
 
-## Adding Tokens
+## Adding tokens
 
-Adding Tokens to the text system is simple, but will require editing the source and compiling your own binary.
-Tokens are stored within TokenLookup inside Tokenizer.cs, found [here.](https://github.com/HealthITAU/TED/blob/main/src/TED/TED.Utils/Tokenizer.cs)
+Adding tokens to the text system requires editing the source and compiling your own binary.
+Tokens are stored in `TokenLookup` inside [`Tokenizer.cs`](https://github.com/HealthITAU/TED/blob/main/src/TED/TED.Utils/Tokenizer.cs).
 
-Simply add to this dictionary your token as the key and what you'd like to subtitute it with as the value.
-Compile, and use your new tokens!
+Add your token as the dictionary key and the substituted value provider as the value, then compile and use your new token in a `-line` value.
 
 ## Contributing
 
