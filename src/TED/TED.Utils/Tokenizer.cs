@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Principal;
-using Microsoft.VisualBasic.Devices;
 
 namespace TED.Utils
 {
@@ -15,10 +13,15 @@ namespace TED.Utils
         /// </summary>
         static Dictionary<string, Func<string>> TokenLookup = new Dictionary<string, Func<string>>()
         {
-            { "@userName", () => WindowsIdentity.GetCurrent().Name },
-            { "@machineName", () => Environment.MachineName },
-            { "@osVersion", () => Environment.OSVersion.ToString() },
-            { "@osName", () => new ComputerInfo().OSFullName }
+            { "@userName", MachineInfoTokenProvider.GetUserName },
+            { "@machineName", MachineInfoTokenProvider.GetMachineName },
+            { "@machineSerial", MachineInfoTokenProvider.GetMachineSerial },
+            { "@manufacturer", MachineInfoTokenProvider.GetManufacturer },
+            { "@model", MachineInfoTokenProvider.GetModel },
+            { "@ipAddress", MachineInfoTokenProvider.GetPrimaryIpAddress },
+            { "@macAddress", MachineInfoTokenProvider.GetPrimaryMacAddress },
+            { "@osVersion", MachineInfoTokenProvider.GetOsVersion },
+            { "@osName", MachineInfoTokenProvider.GetOsName }
         };
 
         /// <summary>

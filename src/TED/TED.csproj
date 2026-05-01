@@ -28,6 +28,7 @@
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
     <TrimmerRootAssembly Include="System.Windows.Forms" />
     <TrimmerRootAssembly Include="System.Windows.Forms.Primitives" />
   </ItemGroup>
