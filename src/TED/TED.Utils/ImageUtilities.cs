@@ -58,11 +58,15 @@ namespace TED.Utils
         public static double CalculateImageLuminance01(Bitmap bm)
         {
             var lum = 0.0;
-            var width = bm.Width;
-            var height = bm.Height;
-            var bytesPerPixel = Image.GetPixelFormatSize(bm.PixelFormat) / 8;
+            using var normalizedBitmap = new Bitmap(bm.Width, bm.Height, PixelFormat.Format32bppArgb);
+            using (var graphics = Graphics.FromImage(normalizedBitmap))
+            {
+                graphics.DrawImage(bm, new Rectangle(0, 0, normalizedBitmap.Width, normalizedBitmap.Height));
+            }
 
-            var srcData = bm.LockBits(new Rectangle(0, 0, bm.Width, bm.Height), ImageLockMode.ReadOnly, bm.PixelFormat);
+            var width = normalizedBitmap.Width;
+            var height = normalizedBitmap.Height;
+            var srcData = normalizedBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             var stride = srcData.Stride;
             IntPtr scan0 = srcData.Scan0;
 
@@ -70,16 +74,22 @@ namespace TED.Utils
             // Luminance (perceived option 1): (0.299*R + 0.587*G + 0.114*B)
             // Luminance (perceived option 2, slower to calculate): sqrt( 0.299*R^2 + 0.587*G^2 + 0.114*B^2 )
 
-            for (var y = 0; y < height; y++)
+            try
             {
-                for (var x = 0; x < width; x++)
+                for (var y = 0; y < height; y++)
                 {
-                    var idx = y * stride + x * bytesPerPixel;
-                    lum += (0.299 * Marshal.ReadByte(scan0, idx + 2) + 0.587 * Marshal.ReadByte(scan0, idx + 1) + 0.114 * Marshal.ReadByte(scan0, idx)) / 255.0;
+                    for (var x = 0; x < width; x++)
+                    {
+                        var idx = y * stride + x * 4;
+                        lum += (0.299 * Marshal.ReadByte(scan0, idx + 2) + 0.587 * Marshal.ReadByte(scan0, idx + 1) + 0.114 * Marshal.ReadByte(scan0, idx)) / 255.0;
+                    }
                 }
             }
+            finally
+            {
+                normalizedBitmap.UnlockBits(srcData);
+            }
 
-            bm.UnlockBits(srcData);
             var normalized = lum / (width * height);
             return normalized;
         }

@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace TED.Utils
@@ -30,14 +32,13 @@ namespace TED.Utils
                 {
                     Timeout = TimeSpan.FromSeconds(10)
                 })
+                using (var response = await client.GetAsync(url))
                 {
-                    var response = await client.GetAsync(url);
-
                     try
                     {
                         response.EnsureSuccessStatusCode();
                     }
-                    catch (HttpRequestException e)
+                    catch (HttpRequestException)
                     {
                         // If we catch here, it's a URL error or server-side issue.
                         if (File.Exists(recentPath))
@@ -48,16 +49,7 @@ namespace TED.Utils
                         return string.Empty;
                     }
 
-                    var fileName = "ted.png";
-
-                    if (response.Headers.ETag != null)
-                    {
-                        fileName = $"{response.Headers.ETag?.Tag.Replace("\"", string.Empty)}.png";
-                    }
-                    else if (response.Content.Headers.ContentDisposition != null)
-                    {
-                        fileName = $"{response.Content.Headers.ContentDisposition.FileName}";
-                    }
+                    var fileName = CreateCachedFileName(url);
 
                     if (!Directory.Exists(tedDirectory))
                     {
@@ -73,7 +65,7 @@ namespace TED.Utils
                     }
 
                     var filesToDelete = Directory.GetFiles(tedDirectory)
-                                            .Where(filePath => Path.GetFileNameWithoutExtension(filePath) != fileName && Path.GetFileNameWithoutExtension(filePath) != "recent");
+                                            .Where(filePath => Path.GetFileName(filePath) != fileName && Path.GetFileNameWithoutExtension(filePath) != "recent");
                     foreach (var fileToDelete in filesToDelete)
                     {
                         File.Delete(fileToDelete);
@@ -93,7 +85,7 @@ namespace TED.Utils
                         }
                     }
                 }
-            } catch(HttpRequestException e)
+            } catch(HttpRequestException)
             {
                 // If we catch here, we're offline.
                 if (File.Exists(recentPath))
@@ -112,7 +104,7 @@ namespace TED.Utils
         /// </summary>
         /// <param name="url">The URL of the file to download.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is the path to the downloaded (or cached) file.</returns>
-        public static bool PathIsLocalFile(string path) => Path.IsPathFullyQualified(path) && File.Exists(path);
+        public static bool PathIsLocalFile(string path) => File.Exists(path);
 
         /// <summary>
         /// Determines whether a specified path represents a URL.
@@ -120,5 +112,12 @@ namespace TED.Utils
         /// <param name="path">The path to check.</param>
         /// <returns>True if the path represents a URL; otherwise, false.</returns>
         public static bool PathIsUrl(string path) => !Path.IsPathFullyQualified(path) && Uri.TryCreate(path, UriKind.Absolute, out _);
+
+        private static string CreateCachedFileName(string url)
+        {
+            var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(url));
+            var hash = Convert.ToHexString(hashBytes).ToLowerInvariant();
+            return $"ted-{hash}.png";
+        }
     }
 }

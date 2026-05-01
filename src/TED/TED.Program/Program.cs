@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Windows.Forms;
 using TED.Utils;
 
 namespace TED.Program
@@ -20,10 +21,29 @@ namespace TED.Program
         /// Application entry point
         /// </summary>
         /// <param name="args">An array of command-line arguments.</param>
+        [STAThread]
         public static void Main(string[] args)
         {
-            tagger = new Tagger(ParseArgsIntoOptions(args));
-            tagger.Tag();
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            var options = ParseArgsIntoOptions(args);
+
+            try
+            {
+                tagger = new Tagger(options);
+                tagger.Tag();
+            }
+            catch (Exception ex)
+            {
+                if (options.Debug)
+                {
+                    MessageBox.Show(ex.ToString(), "TED Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -38,7 +58,7 @@ namespace TED.Program
             var darkImagePath = GetArgument(args, new string[] { "-darkimage", "-di" }, Options.Default.DarkImagePath);
             var lightImagePath = GetArgument(args, new string[] { "-lightimage", "-li" }, Options.Default.LightImagePath);
             var alignment = GetArgument(args, new string[] { "-align", "-a" }, "left");
-            var lines = Options.Default.Lines;
+            var lines = new List<string>(Options.Default.Lines);
 
             if (!bool.TryParse(GetArgument(args, new string[] { "-debug", "-d" }, Options.Default.Debug.ToString()), out bool debug))
             {
@@ -87,7 +107,7 @@ namespace TED.Program
                     break;
             }
 
-            if (args.Any(arg => arg.Contains("-line")))
+            if (args.Any(arg => arg == "-line"))
             {
                 lines.Clear();
             }

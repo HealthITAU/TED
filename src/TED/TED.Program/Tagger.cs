@@ -1,4 +1,7 @@
-﻿using TED.DrawModes;
+using System;
+using System.Threading;
+using System.Windows.Forms;
+using TED.DrawModes;
 using TED.Utils;
 
 namespace TED.Program
@@ -20,7 +23,6 @@ namespace TED.Program
         public Tagger(Options options)
         {
             Options = options;
-
         }
 
         /// <summary>
@@ -28,13 +30,34 @@ namespace TED.Program
         /// </summary>
         public void Tag()
         {
-            var progman = Win32Native.GetProgmanWindow();
-            Win32Native.ClearWindow(progman);
-            var workerWindow = Win32Native.CreateWorkerW(progman);
-            var deviceContext = Win32Native.GetWorkerWindowDeviceContext(workerWindow);
-            DrawModeBase drawer = new OneTimeDrawMode(deviceContext, Options);
-            drawer.Draw();
-            Win32Native.ReleaseWorkerWindowDeviceContext(workerWindow, deviceContext);
+            var desktopHost = Win32Native.GetDesktopHostWindow();
+            if (desktopHost == IntPtr.Zero)
+            {
+                throw new InvalidOperationException("TED could not find the Windows desktop host window.");
+            }
+
+            CloseExistingOverlay(desktopHost);
+            Application.Run(new DesktopOverlayForm(desktopHost, Options));
+        }
+
+        private static void CloseExistingOverlay(IntPtr desktopHost)
+        {
+            var existingOverlay = Win32Native.FindChildWindowByTitle(desktopHost, DesktopOverlayForm.OverlayWindowTitle);
+            if (existingOverlay == IntPtr.Zero)
+            {
+                return;
+            }
+
+            Win32Native.CloseWindow(existingOverlay);
+
+            for (var attempts = 0; attempts < 20; attempts++)
+            {
+                Thread.Sleep(100);
+                if (Win32Native.FindChildWindowByTitle(desktopHost, DesktopOverlayForm.OverlayWindowTitle) == IntPtr.Zero)
+                {
+                    return;
+                }
+            }
         }
     }
 }
