@@ -59,7 +59,11 @@ function Get-TedDownloadUrl {
         [string]$Architecture
     )
 
-    return "$ReleaseDownloadBaseUrl/TED-$Architecture-$DeploymentType.exe"
+    if ($DeploymentType -eq 'framework-dependent') {
+        return "$ReleaseDownloadBaseUrl/TED-$Architecture-framework-dependent.exe"
+    }
+
+    return "$ReleaseDownloadBaseUrl/TED-$Architecture.exe"
 }
 
 function Get-WindowsArchitecture {

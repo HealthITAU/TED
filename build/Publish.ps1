@@ -32,12 +32,14 @@ else {
 
 $deploymentOptions = @{
     FrameworkDependent = @{
-        FileSuffix = "framework-dependent"
+        OutputDirectory = "framework-dependent"
+        ArtifactSuffix = "framework-dependent"
         SelfContained = "false"
         SingleFileCompression = "false"
     }
     SelfContained = @{
-        FileSuffix = "self-contained"
+        OutputDirectory = "self-contained"
+        ArtifactSuffix = ""
         SelfContained = "true"
         SingleFileCompression = "true"
     }
@@ -58,13 +60,17 @@ $env:LOCALAPPDATA = $localAppData
 $topLevelArtifactNames = @(
     "TED-x64.exe",
     "TED-x86.exe",
-    "TED-winarm64.exe"
+    "TED-winarm64.exe",
+    "TED-x64-self-contained.exe",
+    "TED-x86-self-contained.exe",
+    "TED-winarm64-self-contained.exe"
 )
 
 foreach ($mode in $deploymentModes) {
     foreach ($target in $targets) {
-        $modeFileSuffix = $deploymentOptions[$mode].FileSuffix
-        $topLevelArtifactNames += "TED-$($target.FileSuffix)-$modeFileSuffix.exe"
+        $artifactSuffix = $deploymentOptions[$mode].ArtifactSuffix
+        $artifactSuffixPart = if ([string]::IsNullOrWhiteSpace($artifactSuffix)) { "" } else { "-$artifactSuffix" }
+        $topLevelArtifactNames += "TED-$($target.FileSuffix)$artifactSuffixPart.exe"
     }
 }
 
@@ -79,14 +85,15 @@ $publishedArtifacts = @()
 
 foreach ($mode in $deploymentModes) {
     $options = $deploymentOptions[$mode]
-    $modeFileSuffix = $options.FileSuffix
+    $modeOutputDirectory = $options.OutputDirectory
+    $artifactSuffix = $options.ArtifactSuffix
     $selfContained = $options.SelfContained
     $singleFileCompression = $options.SingleFileCompression
     $publishTrimmed = if ($EnableUnsafeTrim -and $mode -eq "SelfContained") { "true" } else { "false" }
 
     foreach ($target in $targets) {
         $runtime = $target.Runtime
-        $runtimeOutput = Join-Path $publishRoot (Join-Path $modeFileSuffix $runtime)
+        $runtimeOutput = Join-Path $publishRoot (Join-Path $modeOutputDirectory $runtime)
 
         $publishArgs = @(
             "publish", $project,
@@ -111,7 +118,8 @@ foreach ($mode in $deploymentModes) {
         }
 
         $publishedExe = Join-Path $runtimeOutput "TED.exe"
-        $finalFileName = "TED-$($target.FileSuffix)-$modeFileSuffix.exe"
+        $artifactSuffixPart = if ([string]::IsNullOrWhiteSpace($artifactSuffix)) { "" } else { "-$artifactSuffix" }
+        $finalFileName = "TED-$($target.FileSuffix)$artifactSuffixPart.exe"
         $finalExe = Join-Path $publishRoot $finalFileName
         Copy-Item -Force $publishedExe $finalExe
 
