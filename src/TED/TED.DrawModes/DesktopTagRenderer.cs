@@ -21,7 +21,7 @@ namespace TED.DrawModes
 
             using (var font = new Font(options.FontName, options.FontSize, FontStyle.Regular))
             {
-                var formattedLines = options.Lines.Select(MarkdownInlineParser.Parse).ToList();
+                var formattedLines = options.Lines.Select(RichTextInlineParser.Parse).ToList();
                 var scaleX = graphics.DpiX / 96.0f;
                 var scaleY = graphics.DpiY / 96.0f;
                 var scaledWorkingAreaWidth = primaryAreaRect.X / scaleX;
@@ -61,10 +61,7 @@ namespace TED.DrawModes
 
                 for (var i = 0; i < options.Lines.Count; i++)
                 {
-                    using (var brush = new SolidBrush(textColor))
-                    {
-                        DrawFormattedLine(graphics, formattedLines[i], font, brush, textX, textY, maxWidth, options.TextAlignment);
-                    }
+                    DrawFormattedLine(graphics, formattedLines[i], font, textColor, textX, textY, maxWidth, options.TextAlignment);
 
                     textY += lineHeights[i];
 
@@ -95,7 +92,7 @@ namespace TED.DrawModes
             return new SizeF(width, height);
         }
 
-        private static void DrawFormattedLine(Graphics graphics, FormattedLine line, Font baseFont, Brush brush, float x, float y, float maxWidth, StringAlignment alignment)
+        private static void DrawFormattedLine(Graphics graphics, FormattedLine line, Font baseFont, Color defaultTextColor, float x, float y, float maxWidth, StringAlignment alignment)
         {
             var lineSize = MeasureFormattedLine(graphics, line, baseFont);
             var runX = x + GetAlignedOffset(maxWidth, lineSize.Width, alignment);
@@ -103,6 +100,7 @@ namespace TED.DrawModes
             foreach (var run in line.Runs)
             {
                 using (var runFont = CreateRunFont(baseFont, run))
+                using (var brush = new SolidBrush(run.Color ?? defaultTextColor))
                 using (var format = CreateStringFormat())
                 {
                     graphics.DrawString(run.Text, runFont, brush, new PointF(runX, y), format);
@@ -122,6 +120,11 @@ namespace TED.DrawModes
             if (run.Italic)
             {
                 style |= FontStyle.Italic;
+            }
+
+            if (run.Underline)
+            {
+                style |= FontStyle.Underline;
             }
 
             return new Font(baseFont.FontFamily, baseFont.Size, style, baseFont.Unit);

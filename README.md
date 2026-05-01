@@ -47,7 +47,7 @@ TED supports the following switches:
 - `-w` or `-width`: The width of the image when drawn, in pixels. By default this is **-1**. 
   - A value of -1 disables fixed width scaling and instead uses automatic image scaling to resize (respecting aspect ratio) the image to the size of the longest line of text.
 - `-a` or `-align`: How the text should be aligned. Default is **Left**. Accepted values are **Left**, **Center** or **Right**. Not case-sensitive.
-- `-line`: The text to be drawn. This switch can be repeated multiple times to draw multiple lines of text. It can contain special tokens: `@userName`, `@machineName`, `@osName` and `@osVersion`. These tokens get substituted at runtime with system values for the operating system, current user, and machine name. Lines also support strict Markdown inline formatting for bold (`**text**` or `__text__`), italic (`*text*` or `_text_`), and bold italic (`***text***` or `___text___`). If no lines are provided, it will render with the following by default:
+- `-line`: The text to be drawn. This switch can be repeated multiple times to draw multiple lines of text. It can contain special tokens: `@userName`, `@machineName`, `@osName` and `@osVersion`. These tokens get substituted at runtime with system values for the operating system, current user, and machine name. Lines also support inline rich text tags for bold (`<b>text</b>`), italic (`<i>text</i>`), underline (`<u>text</u>`), and color (`<color=green>text</color>` or `<color=#800080>text</color>`). Untagged text still uses TED's luminance-based black or white text color; tagged colors are drawn as specified. If no lines are provided, it will render with the following by default:
   - "USERNAME: @userName"
   - "MACHINE NAME: @machineName"
   - "OS: @osName"
@@ -62,10 +62,10 @@ TED is a CLI tool and can be called like so:
 ted -di path/to/dark_image.png -li path/to/light_image.png -f Arial -fs 14 -ls 5 -hp 10 -vp 10 -line "Hello, @userName!" -line "You are using @osName on @machineName."
 ```
 
-Inline Markdown formatting can be used inside lines:
+Inline rich text formatting can be used inside lines:
 
 ```shell
-ted -line "User: **@userName**" -line "_OS:_ @osName" -line "Device: __@machineName__" -line "Status: ***Important***"
+ted -line "<color=purple>OS: </color><color=green>@osName</color>" -line "<b><u>Device:</u></b> <i>@machineName</i>"
 ```
 
 In terms of real world usage, we've found this to be a fantastic tool for helping clients quickly identify key information about their machine whilst on the phone with them.
