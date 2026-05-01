@@ -28,6 +28,7 @@ namespace TED.DrawModes
             this.options = options;
 
             Text = OverlayWindowTitle;
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             ShowInTaskbar = false;
             FormBorderStyle = FormBorderStyle.None;
             StartPosition = FormStartPosition.Manual;
