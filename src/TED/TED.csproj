@@ -15,6 +15,7 @@
     <InformationalVersion>Prerelease</InformationalVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\ted-app-icon.ico</ApplicationIcon>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <Company>Health IT</Company>
     <Title>TED - Tag Every Desktop</Title>

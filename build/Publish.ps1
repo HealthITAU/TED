@@ -45,6 +45,25 @@ $deploymentOptions = @{
     }
 }
 
+$tedProcessNames = @(
+    "TED",
+    "TED-x64",
+    "TED-x86",
+    "TED-winarm64",
+    "TED-x64-self-contained",
+    "TED-x86-self-contained",
+    "TED-winarm64-self-contained",
+    "TED-x64-framework-dependent",
+    "TED-x86-framework-dependent",
+    "TED-winarm64-framework-dependent"
+)
+
+$runningTedProcesses = Get-Process -Name $tedProcessNames -ErrorAction SilentlyContinue
+if ($runningTedProcesses) {
+    Write-Host "Stopping running TED processes before publishing..."
+    $runningTedProcesses | Stop-Process -Force
+}
+
 New-Item -ItemType Directory -Force -Path $publishRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $dotnetHome | Out-Null
 New-Item -ItemType Directory -Force -Path $appData | Out-Null
