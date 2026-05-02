@@ -4,6 +4,8 @@
 
 TED is a command-line tool, inspired by the classic [BGInfo](https://learn.microsoft.com/en-us/sysinternals/downloads/bginfo), designed for MSPs to be able to display images and text programmatically on the desktop, positioned above the wallpaper but below the icons. It utilizes the bottom right corner of the primary monitor as the drawing area.
 
+TED runs as a lightweight desktop process so it can repaint itself when Windows redraws the desktop. This avoids modifying or replacing the user's wallpaper.
+
 ## Features
 
 - Display images and text on the desktop
@@ -20,8 +22,7 @@ TED is a command-line tool, inspired by the classic [BGInfo](https://learn.micro
 
 ## Limitations
 
-- TED runs as a lightweight desktop process so it can repaint itself when Windows redraws the desktop. This avoids modifying or replacing the user's wallpaper.
-- In remote desktop environments, Explorer and GPU composition behavior can still vary between Windows versions and client settings.
+In remote desktop environments, Explorer and GPU composition behavior can still vary between Windows versions and client settings.
 
 ## Installation
 
