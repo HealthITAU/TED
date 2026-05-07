@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace TED.Utils
@@ -32,14 +33,14 @@ namespace TED.Utils
         /// <summary>
         /// Calculates the perceived luminance of the current desktop wallpaper.
         /// </summary>
-        /// <returns>A value representing the calculated perceived luminance of the wallpaper. Returns 0.0 if the wallpaper path is not found.</returns>
+        /// <returns>A value representing the calculated perceived luminance of the wallpaper. Returns 0.0 if the wallpaper path is not found or no longer exists.</returns>
         public static double CalculateWallpaperLuminance()
         {
             // Get the wallpaper path from the registry
             string wallpaperPath = SystemUtilities.GetWallpaperPathFromRegistry();
             double luminance = 0.0;
 
-            if (!string.IsNullOrEmpty(wallpaperPath))
+            if (!string.IsNullOrEmpty(wallpaperPath) && File.Exists(wallpaperPath))
             {
                 using (var bmp = new Bitmap(wallpaperPath))
                 {
