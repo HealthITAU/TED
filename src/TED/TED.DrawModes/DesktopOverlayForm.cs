@@ -1,6 +1,9 @@
 using Microsoft.Win32;
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.Windows.Forms;
 using TED.Program;
 using TED.Utils;
@@ -21,6 +24,7 @@ namespace TED.DrawModes
         private IntPtr desktopHost;
         private int remainingRepairAttempts;
         private Size lastVirtualScreenSize;
+        private bool perPixelAlpha;
 
         internal DesktopOverlayForm(IntPtr desktopHost, Options options)
         {
@@ -33,7 +37,8 @@ namespace TED.DrawModes
             FormBorderStyle = FormBorderStyle.None;
             StartPosition = FormStartPosition.Manual;
             BackColor = TransparencyColor;
-            TransparencyKey = TransparencyColor;
+            // No TransparencyKey: the layered attributes are set in OnHandleCreated, either per-pixel
+            // alpha (Windows 11 24H2+) or the colour key as a fallback.
 
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
 
@@ -64,6 +69,32 @@ namespace TED.DrawModes
             base.OnHandleCreated(e);
             lastVirtualScreenSize = SystemInformation.VirtualScreen.Size;
             Win32Native.AttachWindowToDesktopHost(Handle, desktopHost, lastVirtualScreenSize, true);
+            ConfigureTransparency();
+        }
+
+        /// <summary>
+        /// Prefers per-pixel alpha (DWMWA_REDIRECTIONBITMAP_ALPHA, Windows 11 build 26100+), so
+        /// semi-transparent image pixels and anti-aliased text blend with the wallpaper. On older
+        /// builds the attribute is rejected and the window falls back to the colour key.
+        /// </summary>
+        private void ConfigureTransparency()
+        {
+            // The window must be a layered window with constant alpha for DWM to accept the attribute
+            // on a child window; a non-layered child returns E_HANDLE.
+            Win32Native.SetLayeredWindowAttributes(Handle, 0, 255, Win32Native.LWA_ALPHA);
+
+            var enable = 1;
+            perPixelAlpha = Win32Native.DwmSetWindowAttribute(Handle, Win32Native.DWMWA_REDIRECTIONBITMAP_ALPHA, ref enable, sizeof(int)) == 0;
+
+            if (!perPixelAlpha)
+            {
+                Win32Native.SetLayeredWindowAttributes(Handle, (uint)ColorTranslator.ToWin32(TransparencyColor), 0, Win32Native.LWA_COLORKEY);
+            }
+
+            // In per-pixel mode the frame is copied in a single BitBlt (alpha included); the
+            // double buffer would only add a copy that does not preserve alpha.
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, !perPixelAlpha);
+            Invalidate();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -93,13 +124,48 @@ namespace TED.DrawModes
 
         protected override void OnPaintBackground(PaintEventArgs e)
         {
-            // Suppress the default background erase; OnPaint clears and draws in one buffered pass.
+            // Suppress the default background erase; OnPaint draws the whole frame in one pass.
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            e.Graphics.Clear(TransparencyColor);
-            DesktopTagRenderer.Draw(e.Graphics, options);
+            if (!perPixelAlpha)
+            {
+                e.Graphics.Clear(TransparencyColor);
+                DesktopTagRenderer.Draw(e.Graphics, options);
+                return;
+            }
+
+            // Draw into a transparent ARGB bitmap, then copy it (alpha included, premultiplied)
+            // into the window's redirection bitmap, which DWM composes with per-pixel alpha.
+            var size = lastVirtualScreenSize.IsEmpty ? ClientSize : lastVirtualScreenSize;
+            if (size.Width <= 0 || size.Height <= 0)
+            {
+                return;
+            }
+
+            using var bitmap = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
+            bitmap.SetResolution(e.Graphics.DpiX, e.Graphics.DpiY);
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.Clear(Color.Transparent);
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                // ClearType assumes an opaque background; grayscale AA yields correct alpha.
+                graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                DesktopTagRenderer.Draw(graphics, options);
+            }
+
+            var hdc = e.Graphics.GetHdc();
+            try
+            {
+                Win32Native.BlitPremultiplied(hdc, bitmap);
+            }
+            finally
+            {
+                e.Graphics.ReleaseHdc(hdc);
+            }
         }
 
         protected override void WndProc(ref Message m)

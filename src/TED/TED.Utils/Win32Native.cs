@@ -33,7 +33,60 @@ namespace TED.Utils
         public const int WS_EX_TOOLWINDOW = 0x00000080;
         public const int WS_EX_TRANSPARENT = 0x00000020;
 
+        // Windows 11 build 26100+: honour the alpha channel of the window's redirection bitmap.
+        public const int DWMWA_REDIRECTIONBITMAP_ALPHA = 39;
+        public const uint LWA_COLORKEY = 0x00000001;
+        public const uint LWA_ALPHA = 0x00000002;
+        private const uint SRCCOPY = 0x00CC0020;
+
         public delegate bool EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
+
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
+
+        [DllImport("gdi32.dll", SetLastError = true)]
+        private static extern IntPtr CreateCompatibleDC(IntPtr hdc);
+
+        [DllImport("gdi32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool DeleteDC(IntPtr hdc);
+
+        [DllImport("gdi32.dll")]
+        private static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
+
+        [DllImport("gdi32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool DeleteObject(IntPtr hObject);
+
+        [DllImport("gdi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool BitBlt(IntPtr hdcDest, int x, int y, int width, int height, IntPtr hdcSrc, int xSrc, int ySrc, uint rop);
+
+        /// <summary>
+        /// Copies a 32bpp ARGB bitmap onto a device context as premultiplied BGRA, alpha channel included
+        /// (BitBlt SRCCOPY copies all 32 bits; no blending happens here).
+        /// </summary>
+        public static void BlitPremultiplied(IntPtr hdcDest, Bitmap bitmap)
+        {
+            var memoryDc = CreateCompatibleDC(hdcDest);
+            // GetHbitmap with a fully transparent background produces a premultiplied 32bpp DIB.
+            var hBitmap = bitmap.GetHbitmap(Color.FromArgb(0));
+            var previous = SelectObject(memoryDc, hBitmap);
+            try
+            {
+                BitBlt(hdcDest, 0, 0, bitmap.Width, bitmap.Height, memoryDc, 0, 0, SRCCOPY);
+            }
+            finally
+            {
+                SelectObject(memoryDc, previous);
+                DeleteObject(hBitmap);
+                DeleteDC(memoryDc);
+            }
+        }
 
         [Flags]
         public enum SendMessageTimeoutFlags : uint
